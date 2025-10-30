@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'rest_framework',
-    'UrbenFoot'
+    'UrbenFoot',
+    'payments'
 ]
 
 MIDDLEWARE = [
@@ -142,3 +143,6 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
+
+RAZORPAY_KEY_ID = "rzp_test_RLPdYLVaolt9vW"
+RAZORPAY_KEY_SECRET = "6XHmuJYqWDj9wYfQ2yHN7RK4"

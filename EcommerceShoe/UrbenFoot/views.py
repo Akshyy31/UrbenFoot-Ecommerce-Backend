@@ -2,13 +2,15 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework.views import APIView
 from UrbenFoot.models import ProductModel,CartModel,WishListModel
 from rest_framework.response import Response
-from .serializers import ProductSerializer,CartSerializer,WishlistSerializer
+from .serializers import ProductSerializer,CartSerializer,WishlistSerializer,OrderItemSerializer,OrderSerializer
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 from rest_framework import status
 from django.db.models import Sum,F
 from rest_framework import viewsets
+from payments.models import OrderItemModel,OrderModel
+
 
 # Create your views here.
 
@@ -124,4 +126,20 @@ class WishlistView(APIView):
         WishListModel.objects.filter(user=request.user, product_id=product_id).delete()
         return Response({'message': 'Removed from wishlist'}, status=status.HTTP_200_OK)
 
+class UserOrderListView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        orders = OrderModel.objects.filter(user=request.user).order_by('-created_at')
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data)
 
+class UserOrderDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, order_id):
+        try:
+            order = OrderModel.objects.get(id=order_id, user=request.user)
+        except OrderModel.DoesNotExist:
+            return Response({"error": "Order not found"}, status=404)
+        
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)

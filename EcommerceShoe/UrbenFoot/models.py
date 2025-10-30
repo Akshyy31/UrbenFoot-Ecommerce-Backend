@@ -46,17 +46,14 @@ class CartModel(models.Model):
     @property
     def total_price(self):
         return self.product.price * self.quantity
-    
-    
+       
 class WishListModel(models.Model):
     user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='wishlist_items')
     product=models.ForeignKey(ProductModel,on_delete=models.CASCADE)
     added_at = models.DateTimeField(auto_now_add=True)
-    
-    
     class Meta:
-        unique_together=('user','product')
-        
+        unique_together=('user','product')    
     def __str__(self):
         return f"{self.user.first_name} - {self.product.name}"
     
+ 
