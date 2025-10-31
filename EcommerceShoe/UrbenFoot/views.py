@@ -129,7 +129,7 @@ class WishlistView(APIView):
 
     def get(self, request):
         items = WishListModel.objects.filter(user=request.user)
-        serializer = WishlistSerializer(items, many=True)
+        serializer = WishlistSerializer(items, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
