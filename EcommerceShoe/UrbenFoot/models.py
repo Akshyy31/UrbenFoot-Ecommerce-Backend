@@ -13,10 +13,10 @@ class ProductModel(models.Model):
         ("available", "Available"),
         ("not_available", "Not Available"),
     )
-    IS_NEW_CHOICES = (
-        ("new", "New"),
-        (" ", " "),
-    )
+    # IS_NEW_CHOICES = (
+    #     ("new", "New"),
+    #     (" ", " "),
+    # )
     name = models.CharField(max_length=100)
     image = models.ImageField(upload_to="product_images/")
     image1 = models.ImageField(upload_to="product_images/")
@@ -26,7 +26,7 @@ class ProductModel(models.Model):
     category = models.ForeignKey(CategoryModel,related_name='products', on_delete=models.CASCADE)
     stock = models.CharField(max_length=50, choices=STOCK_CHOICES)
     quantity = models.PositiveIntegerField()
-    is_new = models.CharField(max_length=20, choices=IS_NEW_CHOICES)
+    is_new = models.BooleanField(default=False)
     brand = models.CharField(max_length=50)
     
     def __str__(self):

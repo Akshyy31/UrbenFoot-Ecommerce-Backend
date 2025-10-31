@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from accounts.models import CustomeUser
+from accounts.models import CustomeUser,UserProfile
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -57,6 +57,7 @@ class LoginSerializer(serializers.Serializer):
                         "email": user.email,
                         "first_name": user.first_name,
                         "last_name": user.last_name,
+                        "role":user.role
                     },
                 }
             else:
@@ -65,3 +66,10 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 "Both username and password are required."
             )
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    user = RegisterSerializer(read_only=True)
+    class Meta:
+        model=UserProfile
+        fields="__all__"

@@ -4,12 +4,45 @@ from payments.models import OrderItemModel,OrderModel
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = CategoryModel
         fields = ["id", "name"]
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    image1 = serializers.SerializerMethodField()
+    image2 = serializers.SerializerMethodField()
+    image3 = serializers.SerializerMethodField()
+   
+    
+    def get_image(self, obj):
+        request = self.context.get('request')
+        if obj.image:
+            return request.build_absolute_uri(obj.image.url)
+        return None
+   
+    def get_image1(self, obj):
+        request = self.context.get('request')
+        if obj.image1:
+            return request.build_absolute_uri(obj.image1.url)
+        return None
+   
+    def get_image2(self, obj):
+        request = self.context.get('request')
+        if obj.image2:
+            return request.build_absolute_uri(obj.image2.url)
+        return None
+   
+    def get_image3(self, obj):
+        request = self.context.get('request')
+        if obj.image3:
+            return request.build_absolute_uri(obj.image3.url)
+        return None
+   
+   
+
     category = serializers.SlugRelatedField(
         slug_field="name",  # field from Category to show
         queryset=CategoryModel.objects.all(),
@@ -22,7 +55,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class CartSerializer(serializers.ModelSerializer):
     total_price = serializers.SerializerMethodField()
-
+    product=ProductSerializer()
     class Meta:
         model = CartModel
         fields = ["id", "user", "product", "quantity", "total_price"]
