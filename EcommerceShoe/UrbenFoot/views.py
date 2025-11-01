@@ -129,7 +129,7 @@ class WishlistView(APIView):
 
     def get(self, request):
         items = WishListModel.objects.filter(user=request.user)
-        serializer = WishlistSerializer(items, many=True, context={'request': request})
+        serializer = WishlistSerializer(items, many=True, context={"request": request})
         return Response(serializer.data)
 
     def post(self, request):
@@ -142,9 +142,9 @@ class WishlistView(APIView):
             return Response(
                 {"message": "Already in wishlist"}, status=status.HTTP_200_OK
             )
+        serializer = WishlistSerializer(wishlist_item, context={"request": request})
         return Response(
-            {"wishlist_items": WishlistSerializer(wishlist_item).data},
-            status=status.HTTP_201_CREATED,
+            {"wishlist_items": serializer.data}, status=status.HTTP_201_CREATED
         )
 
     def delete(self, request):
