@@ -15,6 +15,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             "username",
             "first_name",
             "last_name",
+            'phone',
             "email",
             "password",
             "password2",
@@ -57,7 +58,8 @@ class LoginSerializer(serializers.Serializer):
                         "email": user.email,
                         "first_name": user.first_name,
                         "last_name": user.last_name,
-                        "role":user.role
+                        "role":user.role,
+                        
                     },
                 }
             else:

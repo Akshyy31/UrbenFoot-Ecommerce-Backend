@@ -9,7 +9,6 @@ class CategorySerializer(serializers.ModelSerializer):
         model = CategoryModel
         fields = ["id", "name"]
 
-
 class ProductSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     image1 = serializers.SerializerMethodField()
@@ -52,7 +51,6 @@ class ProductSerializer(serializers.ModelSerializer):
         model = ProductModel
         fields = "__all__"
 
-
 class CartSerializer(serializers.ModelSerializer):
     total_price = serializers.SerializerMethodField()
     product=ProductSerializer()
@@ -63,7 +61,6 @@ class CartSerializer(serializers.ModelSerializer):
 
     def get_total_price(self, obj):
         return obj.product.price * obj.quantity
-
 
 class WishlistSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source="product.name", read_only=True)
@@ -76,15 +73,12 @@ class WishlistSerializer(serializers.ModelSerializer):
         model = WishListModel
         fields = ["id", "product", "product_name", "product_price", "added_at"]
 
-
 class OrderItemSerializer(serializers.ModelSerializer):
-    product_name = serializers.CharField(source="product.name", read_only=True)
-    product_image = serializers.ImageField(source="product.image", read_only=True)
-
+    product = ProductSerializer(read_only=True)
+    
     class Meta:
         model = OrderItemModel
-        fields = ["id", "product_name", "product_image", "quantity", "price"]
-
+        fields = ['id', 'product', 'quantity', 'price', 'get_subtotal']
 
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
@@ -92,10 +86,23 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderModel
         fields = [
-            "id",
-            "total_amount",
-            "status",
-            "razorpay_order_id",
-            "created_at",
-            "items",
+            'id',
+            'user',
+            'total_amount',
+            'status',
+            'razorpay_order_id',
+            'razorpay_payment_id',
+            'razorpay_signature',
+            'created_at',
+            'updated_at',
+            'address',
+            'city',
+            'state',
+            'pincode',
+            'landmark',
+            'phone',
+            'items',
         ]
+        read_only_fields = ['user', 'status', 'created_at', 'updated_at']
+
+

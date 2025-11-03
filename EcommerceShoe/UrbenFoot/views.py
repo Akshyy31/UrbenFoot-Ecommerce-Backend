@@ -6,7 +6,6 @@ from .serializers import (
     ProductSerializer,
     CartSerializer,
     WishlistSerializer,
-    OrderItemSerializer,
     OrderSerializer,
 )
 from rest_framework import generics
@@ -21,7 +20,7 @@ from payments.models import OrderItemModel, OrderModel
 
 
 class ProductListView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get(self, request):
         category_name = request.query_params.get("category")
@@ -158,7 +157,7 @@ class UserOrderListView(APIView):
 
     def get(self, request):
         orders = OrderModel.objects.filter(user=request.user).order_by("-created_at")
-        serializer = OrderSerializer(orders, many=True)
+        serializer = OrderSerializer(orders, many=True,context={"request":request})
         return Response(serializer.data)
 
 
@@ -171,5 +170,5 @@ class UserOrderDetailView(APIView):
         except OrderModel.DoesNotExist:
             return Response({"error": "Order not found"}, status=404)
 
-        serializer = OrderSerializer(order)
+        serializer = OrderSerializer(order,context={"request":request})
         return Response(serializer.data)
