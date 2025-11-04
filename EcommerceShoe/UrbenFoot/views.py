@@ -8,12 +8,8 @@ from .serializers import (
     WishlistSerializer,
     OrderSerializer,
 )
-from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from django.conf import settings
 from rest_framework import status
-from django.db.models import Sum, F
-from rest_framework import viewsets
 from payments.models import OrderItemModel, OrderModel
 
 # Create your views here.
@@ -31,6 +27,7 @@ class ProductListView(APIView):
         )
         return Response({"products": serializer.data})
 
+
 class ProductDetailView(APIView):
     def get(self, request, pk):
         try:
@@ -39,6 +36,7 @@ class ProductDetailView(APIView):
             return Response(serializer.data)
         except ProductModel.DoesNotExist:
             return Response({"error": "Product not found"}, status=404)
+
 
 class ProductFilterView(APIView):
     def get(self, request):
@@ -140,6 +138,7 @@ class CartView(APIView):
                 {"message": "Cart cleared successfully"}, status=status.HTTP_200_OK
             )
 
+
 class WishlistView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -167,6 +166,7 @@ class WishlistView(APIView):
         product_id = request.data.get("product_id")
         WishListModel.objects.filter(user=request.user, product_id=product_id).delete()
         return Response({"message": "Removed from wishlist"}, status=status.HTTP_200_OK)
+
 
 class UserOrderListView(APIView):
     permission_classes = [IsAuthenticated]

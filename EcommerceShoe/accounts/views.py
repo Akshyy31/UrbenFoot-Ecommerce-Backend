@@ -18,7 +18,6 @@ from django.contrib.auth import get_user_model
 
 # Create your views here.
 
-
 class UserRegistrationView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -33,7 +32,6 @@ class UserRegistrationView(APIView):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-
 class LoginView(APIView):
     def post(self, request):
         print("Incoming data:", request.data)
@@ -43,7 +41,6 @@ class LoginView(APIView):
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
         print("Errors:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
@@ -58,7 +55,6 @@ class UserProfileView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
@@ -79,10 +75,8 @@ class ChangePasswordView(APIView):
             {"message": "Password updated successfully."}, status=status.HTTP_200_OK
         )
 
-
-User = get_user_model()
+CustomeUser = get_user_model()
 token_generator = PasswordResetTokenGenerator()
-
 
 class ForgotPasswordView(APIView):
     def post(self, request):
@@ -91,18 +85,15 @@ class ForgotPasswordView(APIView):
             return Response(
                 {"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST
             )
-
         try:
             user = CustomeUser.objects.get(email=email)
         except CustomeUser.DoesNotExist:
             return Response(
                 {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
             )
-
         # create token and uid
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = token_generator.make_token(user)
-
         reset_link = (
             f"http://localhost:3000/reset-password/{uid}/{token}"  # frontend link
         )
@@ -113,7 +104,6 @@ class ForgotPasswordView(APIView):
             [user.email],
             fail_silently=False,
         )
-
         return Response(
             {"message": "Password reset link sent to your email"},
             status=status.HTTP_200_OK,
@@ -129,8 +119,8 @@ class ResetPasswordView(APIView):
 
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(pk=uid)
-        except (User.DoesNotExist, ValueError, TypeError, OverflowError):
+            user = CustomeUser.objects.get(pk=uid)
+        except (CustomeUser.DoesNotExist, ValueError, TypeError, OverflowError):
             return Response(
                 {"error": "Invalid link"}, status=status.HTTP_400_BAD_REQUEST
             )
