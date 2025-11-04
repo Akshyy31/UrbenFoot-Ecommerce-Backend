@@ -18,6 +18,7 @@ from django.contrib.auth import get_user_model
 
 # Create your views here.
 
+
 class UserRegistrationView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -44,20 +45,29 @@ class LoginView(APIView):
 
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self, request):
         profile = UserProfile.objects.get(user=request.user)
         serializer = UserProfileSerializer(profile)
         return Response(serializer.data)
+
     def put(self, request):
-        profile = UserProfile.objects.get(user=request.user)
+        try:
+            profile = UserProfile.objects.get(user=request.user)
+        except UserProfile.DoesNotExist:
+            return Response(
+                {"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
         serializer = UserProfileSerializer(profile, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
+
     def post(self, request):
         user = request.user
         old_password = request.data.get("old_password")
@@ -116,7 +126,6 @@ class ResetPasswordView(APIView):
             return Response(
                 {"error": "Password is required"}, status=status.HTTP_400_BAD_REQUEST
             )
-
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = CustomeUser.objects.get(pk=uid)
@@ -124,16 +133,48 @@ class ResetPasswordView(APIView):
             return Response(
                 {"error": "Invalid link"}, status=status.HTTP_400_BAD_REQUEST
             )
-
         if not token_generator.check_token(user, token):
             return Response(
                 {"error": "Token is invalid or expired"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
         user.set_password(password)
         user.save()
-
         return Response(
             {"message": "Password reset successfully"}, status=status.HTTP_200_OK
         )
+
+
+from google.oauth2 import id_token
+from google.auth.transport import requests
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import RefreshToken
+
+class GoogleAuthView(APIView):
+    def post(self, request):
+        token = request.data.get('token')
+        try:
+            idinfo = id_token.verify_oauth2_token(
+                token,
+                requests.Request(),
+                "YOUR_GOOGLE_CLIENT_ID"
+            )
+            email = idinfo.get('email')
+            name = idinfo.get('name')
+
+            user, created = CustomeUser.objects.get_or_create(email=email, username=email)
+            if created:
+                user.first_name = name
+                user.save()
+
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+                "email": email,
+                "name": name
+            })
+        except Exception as e:
+            return Response({"error": str(e)}, status=400)

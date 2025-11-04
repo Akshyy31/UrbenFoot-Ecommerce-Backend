@@ -34,12 +34,24 @@ INSTALLED_APPS = [
     # Third-party
     'rest_framework',
     'corsheaders',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'dj_rest_auth.registration',
+
 
     # Your apps
     'accounts',
     'UrbenFoot',
     'payments',
 ]
+
+SITE_ID = 1
+
+REST_USE_JWT = True  # (optional but recommended)
 
 MIDDLEWARE = [                                    # ✅ must be at the top
     "django.middleware.common.CommonMiddleware",  # keep this next
@@ -48,6 +60,7 @@ MIDDLEWARE = [                                    # ✅ must be at the top
     "django.middleware.csrf.CsrfViewMiddleware",
     'corsheaders.middleware.CorsMiddleware',
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    'allauth.account.middleware.AccountMiddleware',
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -68,6 +81,13 @@ TEMPLATES = [
         },
     },
 ]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+    }
+}
 
 WSGI_APPLICATION = 'EcommerceShoe.wsgi.application'
 

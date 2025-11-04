@@ -62,7 +62,6 @@ class CartSerializer(serializers.ModelSerializer):
 
 class WishlistSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source="product.name", read_only=True)
-    
     product_price = serializers.DecimalField(
         source="product.price", max_digits=10, decimal_places=2, read_only=True
     )
@@ -103,5 +102,4 @@ class OrderSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['user', 'status', 'created_at', 'updated_at']
         
-
 

@@ -18,7 +18,7 @@ class CreateOrderView(APIView):
     def post(self, request):
         user = request.user
 
-        # 🏠 Extract address data 
+        # Extract address data 
         address_data = {
             "address": request.data.get("address"),
             "city": request.data.get("city"),
@@ -28,27 +28,27 @@ class CreateOrderView(APIView):
             "phone": request.data.get("phone"),
         }
 
-        # ✅ Validate required fields only
+        # Validate required fields only
         required_fields = ["address", "city", "state", "pincode", "phone"]
         missing = [f for f in required_fields if not address_data.get(f)]
         if missing:
             return Response({"error": f"Missing fields: {', '.join(missing)}"}, status=400)
 
-        # 🛒 Get cart items
+        #  Get cart items
         cart_items = CartModel.objects.filter(user=user)
         if not cart_items.exists():
             return Response({"error": "Cart is empty"}, status=400)
 
-        # 💰 Calculate total
+        
         total = sum(item.product.price * item.quantity for item in cart_items)
 
-        # 🧾 Create Razorpay order
+        # Create Razorpay order
         client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
         razorpay_order = client.order.create(
             {"amount": int(total * 100), "currency": "INR", "payment_capture": 1}
         )
 
-        # 🗂️ Save order in DB
+        # Save order in DB
         order = OrderModel.objects.create(
             user=user,
             total_amount=total,
@@ -56,7 +56,7 @@ class CreateOrderView(APIView):
             **address_data
         )
 
-        # 🧩 Add order items
+        # Add order items
         for item in cart_items:
             OrderItemModel.objects.create(
                 order=order,
@@ -65,7 +65,7 @@ class CreateOrderView(APIView):
                 price=item.product.price,
             )
 
-        # 🧹 Clear cart after order
+        #  Clear cart after order
         cart_items.delete()
 
         return Response({

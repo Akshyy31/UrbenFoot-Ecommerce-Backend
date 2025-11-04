@@ -23,7 +23,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/',include('accounts.urls')),
     path('urbanfoot/',include('UrbenFoot.urls')),
-    path('payments/',include('payments.urls'))
+    path('payments/',include('payments.urls')),
+    
+    path('auth/', include('dj_rest_auth.urls')),
+    path('auth/registration/', include('dj_rest_auth.registration.urls')),
+    path('auth/', include('allauth.socialaccount.urls')),
 ]
 
 if settings.DEBUG:

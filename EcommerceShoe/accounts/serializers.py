@@ -42,6 +42,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
+    
     def validate(self, data):
         username = data.get("username")
         password = data.get("password")
@@ -49,6 +50,7 @@ class LoginSerializer(serializers.Serializer):
             user = authenticate(username=username, password=password)
             if user:
                 refresh = RefreshToken.for_user(user)
+                print("refresh  :  " ,refresh)
                 return {
                     "refresh": str(refresh),
                     "access": str(refresh.access_token),
@@ -58,8 +60,7 @@ class LoginSerializer(serializers.Serializer):
                         "email": user.email,
                         "first_name": user.first_name,
                         "last_name": user.last_name,
-                        "role":user.role,
-                        
+                        "role":user.role, 
                     },
                 }
             else:
@@ -74,4 +75,5 @@ class UserProfileSerializer(serializers.ModelSerializer):
     user = RegisterSerializer(read_only=True)
     class Meta:
         model=UserProfile
-        fields="__all__"
+        fields="__all__" 
+        
