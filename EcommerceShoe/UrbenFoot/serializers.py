@@ -40,8 +40,6 @@ class ProductSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.image3.url)
         return None
    
-   
-
     category = serializers.SlugRelatedField(
         slug_field="name",  # field from Category to show
         queryset=CategoryModel.objects.all(),
@@ -104,5 +102,6 @@ class OrderSerializer(serializers.ModelSerializer):
             'items',
         ]
         read_only_fields = ['user', 'status', 'created_at', 'updated_at']
+        
 
 

@@ -17,4 +17,5 @@ urlpatterns = [
         views.UserOrderDetailView.as_view(),
         name="order-detail",
     ),
+    path('product_filter/',views.ProductFilterView.as_view(),name="product_filter")
 ]

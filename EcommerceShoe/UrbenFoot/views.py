@@ -20,20 +20,16 @@ from payments.models import OrderItemModel, OrderModel
 
 
 class ProductListView(APIView):
-    # permission_classes = [IsAuthenticated]
-
     def get(self, request):
         category_name = request.query_params.get("category")
         if category_name:
             products = ProductModel.objects.filter(category__name__iexact=category_name)
         else:
             products = ProductModel.objects.all()
-        # Pass request context to serializer
         serializer = ProductSerializer(
             products, many=True, context={"request": request}
         )
         return Response({"products": serializer.data})
-
 
 class ProductDetailView(APIView):
     def get(self, request, pk):
@@ -43,6 +39,28 @@ class ProductDetailView(APIView):
             return Response(serializer.data)
         except ProductModel.DoesNotExist:
             return Response({"error": "Product not found"}, status=404)
+
+class ProductFilterView(APIView):
+    def get(self, request):
+        category = request.GET.get("category")
+        name = request.GET.get("name")
+        min_price = request.GET.get("min_price")
+        max_price = request.GET.get("max_price")
+        products = ProductModel.objects.all()
+        if category:
+            products = products.filter(category__name__icontains=category)
+        if name:
+            products = products.filter(name__icontains=name)
+        if min_price and max_price:
+            products = products.filter(price__gte=min_price, price__lte=max_price)
+        elif min_price:
+            products = products.filter(price__gte=min_price)
+        elif max_price:
+            products = products.filter(price__lte=max_price)
+        serializer = ProductSerializer(
+            products, many=True, context={"request": request}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CartView(APIView):
@@ -122,7 +140,6 @@ class CartView(APIView):
                 {"message": "Cart cleared successfully"}, status=status.HTTP_200_OK
             )
 
-
 class WishlistView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -151,13 +168,12 @@ class WishlistView(APIView):
         WishListModel.objects.filter(user=request.user, product_id=product_id).delete()
         return Response({"message": "Removed from wishlist"}, status=status.HTTP_200_OK)
 
-
 class UserOrderListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         orders = OrderModel.objects.filter(user=request.user).order_by("-created_at")
-        serializer = OrderSerializer(orders, many=True,context={"request":request})
+        serializer = OrderSerializer(orders, many=True, context={"request": request})
         return Response(serializer.data)
 
 
@@ -170,5 +186,5 @@ class UserOrderDetailView(APIView):
         except OrderModel.DoesNotExist:
             return Response({"error": "Order not found"}, status=404)
 
-        serializer = OrderSerializer(order,context={"request":request})
+        serializer = OrderSerializer(order, context={"request": request})
         return Response(serializer.data)
