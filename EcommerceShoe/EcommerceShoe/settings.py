@@ -10,8 +10,8 @@ from corsheaders.defaults import default_headers
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # MEDIA (for product images, etc.)
-MEDIA_URL = '/'
-MEDIA_ROOT = BASE_DIR / ''
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # SECURITY
 SECRET_KEY = 'django-insecure-2qcy+ha!-=pe*1k$v2-(_*si#2s9^3q&l*z11=_-)sw949813q'
@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'accounts',
     'UrbenFoot',
     'payments',
+    'AdminSide'
+    
 ]
 
 SITE_ID = 1
@@ -119,6 +121,14 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',  # Bcrypt
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',        # fallback for old passwords
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.ScryptPasswordHasher',
+]
+
 # ------------------------------------------------------------------
 # Internationalization
 # ------------------------------------------------------------------
@@ -140,9 +150,9 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 # ------------------------------------------------------------------
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
+    ],
 }
 
 SIMPLE_JWT = {
@@ -153,14 +163,14 @@ SIMPLE_JWT = {
 }
 
 # ------------------------------------------------------------------
-# 🌐 CORS & CSRF Configuration
+# CORS & CSRF Configuration
 # ------------------------------------------------------------------
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
-CORS_ALLOW_CREDENTIALS = True  # ✅ Required for cookies / CSRF
+CORS_ALLOW_CREDENTIALS = True  #Required for cookies / CSRF
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
