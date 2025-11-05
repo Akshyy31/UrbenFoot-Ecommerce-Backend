@@ -169,3 +169,12 @@ class AdminDashboardView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+
+from django.http import JsonResponse
+
+class TestExceptionView(APIView):
+    def get(self, request):
+        x = 1 / 0
+        return Response({"message": "Won't reach here"})
