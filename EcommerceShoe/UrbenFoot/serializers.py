@@ -43,6 +43,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "image1_url",
             "image2_url",
             "image3_url",
+            'description'
         ]
 
     # Output URLs for frontend

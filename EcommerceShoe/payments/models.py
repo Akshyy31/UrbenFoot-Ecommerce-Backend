@@ -3,7 +3,6 @@ from django.conf import settings
 from UrbenFoot.models import ProductModel
 # Create your models here.
 
-
 class OrderModel(models.Model):
     STATUS_CHOICES = (
         ('PENDING', 'Pending'),
@@ -13,19 +12,22 @@ class OrderModel(models.Model):
         ('DELIVERED', 'Delivered'),
         ('CANCELLED', 'Cancelled'),
     )
-
+    PAYMENT_METHOD_CHOICES = (
+        ('RAZORPAY', 'Razorpay'),
+        ('COD', 'Cash on Delivery'),
+        ('PAYPAL', 'PayPal'),
+        ('STRIPE', 'Stripe'),
+    )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-
-    
     address = models.CharField(max_length=255,null=True)
     city = models.CharField(max_length=100,null=True)
     state = models.CharField(max_length=100,null=True)
     pincode = models.CharField(max_length=10,null=True)
     landmark = models.CharField(max_length=255, null=True, blank=True)
     phone = models.CharField(max_length=15, null=True, blank=True)
-
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='RAZORPAY')
     razorpay_order_id = models.CharField(max_length=255, null=True, blank=True)
     razorpay_payment_id = models.CharField(max_length=255, null=True, blank=True)
     razorpay_signature = models.CharField(max_length=255, null=True, blank=True)
@@ -36,7 +38,6 @@ class OrderModel(models.Model):
         return f"Order {self.id} - {self.user.username} - {self.status}"
 
     
-
 class OrderItemModel(models.Model):
     order = models.ForeignKey(OrderModel, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(ProductModel, on_delete=models.CASCADE)

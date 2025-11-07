@@ -28,6 +28,8 @@ class ProductModel(models.Model):
     quantity = models.PositiveIntegerField()
     is_new = models.BooleanField(default=False)
     brand = models.CharField(max_length=50)
+    description=models.TextField(max_length=300,blank=True,null=True)
+    created_at = models.DateTimeField(auto_now_add=True,blank=True,null=True)
     
     def __str__(self):
         return self.name

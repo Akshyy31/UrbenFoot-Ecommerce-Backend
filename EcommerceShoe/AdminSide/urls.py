@@ -25,5 +25,9 @@ urlpatterns = [
         views.AdminDashboardView.as_view(),
         name="admin_dashboard_details",
     ),
+    path('update/orders/<int:order_id>/status/', views.UpdateOrderStatus.as_view(), name='update-order-status'),
+    path('order/status/summeryview/', views.OrderStatusSummaryView.as_view(), name='orderstatus-summeryview'),
+    path('category/',views.CategoryListView.as_view(),name='category-view')
+
 ]
 

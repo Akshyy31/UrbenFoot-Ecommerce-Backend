@@ -144,6 +144,9 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "EXCEPTION_HANDLER": "EcommerceShoe.utils.exception_handler.custom_exception_handler",   #global exception handling
+    
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,  # 👈 number of products per page
 }
 
 SIMPLE_JWT = {
@@ -181,12 +184,15 @@ RAZORPAY_KEY_SECRET = "La8ACKV8veT5UCFeEZ4jSSVT"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"              # or your provider
+#  Gmail SMTP setup
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "akshayshaji688@gmail.com"
-EMAIL_HOST_PASSWORD = "ckvw izea qlsg qpla"
+EMAIL_HOST_PASSWORD = "ckvw izea qlsg qpla"           # Use Gmail App Password here
+DEFAULT_FROM_EMAIL = "UrbenFoot <akshayshaji688@gmail.com>"
+
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "authorization",
