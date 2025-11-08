@@ -381,3 +381,49 @@ class CategoryListView(APIView):
         categories = CategoryModel.objects.all()
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
+
+
+class BlockUnblockUserView(APIView):
+    permission_classes = [IsAdminRole]
+
+    def post(self, request, user_id):
+        try:
+            user = CustomeUser.objects.get(id=user_id)
+            action = request.data.get("action")
+            if action == "block":
+                user.blocked = True
+                user.status = "blocked"
+                user.save()
+                subject = "Account Blocked Notification"
+                message = (
+                    f"Hi {user.username}, your account has been blocked by the admin."
+                )
+                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+
+                return Response(
+                    {"message": f"{user.username} has been blocked."},
+                    status=status.HTTP_200_OK,
+                )
+
+            elif action == "unblock":
+                user.blocked = False
+                user.status = "active"
+                user.save()
+                subject = "Account Unblocked Notification"
+                message = f"Hi {user.username}, your account has been unblocked. You can now access your account again."
+                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+                return Response(
+                    {"message": f"{user.username} has been unblocked."},
+                    status=status.HTTP_200_OK,
+                )
+
+            else:
+                return Response(
+                    {"error": "Invalid action. Use 'block' or 'unblock'."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        except CustomeUser.DoesNotExist:
+            return Response(
+                {"error": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )

@@ -38,7 +38,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = CustomeUser.objects.create_user(**validated_data)
         return user
 
-
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
@@ -49,6 +48,10 @@ class LoginSerializer(serializers.Serializer):
         if username and password:
             user = authenticate(username=username, password=password)
             if user:
+                if user.blocked and user.role!="admin":
+                    raise serializers.ValidationError(
+                        {"error": "Your account has been blocked by the admin."}
+                    )
                 refresh = RefreshToken.for_user(user)
                 print("refresh  :  " ,refresh)
                 return {
@@ -69,7 +72,6 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 "Both username and password are required."
             )
-
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = RegisterSerializer(read_only=True)

@@ -11,11 +11,14 @@ from .serializers import (
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from payments.models import OrderItemModel, OrderModel
+from accounts.permissions import IsUserOnly
 
 # Create your views here.
 
 
 class ProductListView(APIView):
+    permission_classes = [IsUserOnly]
+
     def get(self, request):
         category_name = request.query_params.get("category")
         if category_name:
@@ -29,6 +32,7 @@ class ProductListView(APIView):
 
 
 class ProductDetailView(APIView):
+    permission_classes = [IsUserOnly]
     def get(self, request, pk):
         try:
             product = ProductModel.objects.get(id=pk)
@@ -39,6 +43,7 @@ class ProductDetailView(APIView):
 
 
 class ProductFilterView(APIView):
+    permission_classes = [IsUserOnly]
     def get(self, request):
         category = request.GET.get("category")
         name = request.GET.get("name")

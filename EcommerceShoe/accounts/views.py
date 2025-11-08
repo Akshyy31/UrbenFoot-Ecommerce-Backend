@@ -145,12 +145,12 @@ class ResetPasswordView(APIView):
         )
 
 
-from google.oauth2 import id_token
-from google.auth.transport import requests
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from django.contrib.auth.models import User
-from rest_framework_simplejwt.tokens import RefreshToken
+# from google.oauth2 import id_token
+# from google.auth.transport import requests
+# from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from django.contrib.auth.models import User
+# from rest_framework_simplejwt.tokens import RefreshToken
 
 class GoogleAuthView(APIView):
     def post(self, request):
