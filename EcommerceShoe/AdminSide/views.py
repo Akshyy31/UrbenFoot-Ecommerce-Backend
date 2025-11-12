@@ -6,8 +6,8 @@ from accounts.models import CustomeUser
 from .serializers import UserListSerializer
 from rest_framework.response import Response
 from rest_framework import status
-from UrbenFoot.models import ProductModel, CategoryModel
-from UrbenFoot.serializers import ProductSerializer, CategorySerializer
+from UrbenFoot.models import ProductModel, CategoryModel,ContactModel
+from UrbenFoot.serializers import ProductSerializer, CategorySerializer,ContactSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Sum, F
 from payments.models import OrderModel, OrderItemModel
@@ -427,3 +427,11 @@ class BlockUnblockUserView(APIView):
             return Response(
                 {"error": "User not found."}, status=status.HTTP_404_NOT_FOUND
             )
+
+
+class ContactMessageView(APIView):
+    permission_classes = [IsAdminRole]
+    def get(self, request):
+        messages = ContactModel.objects.all() 
+        serializer = ContactSerializer(messages, many=True)
+        return Response(serializer.data)

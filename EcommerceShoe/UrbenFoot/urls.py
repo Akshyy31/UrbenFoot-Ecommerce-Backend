@@ -17,5 +17,7 @@ urlpatterns = [
         views.UserOrderDetailView.as_view(),
         name="order-detail",
     ),
-    path('product_filter/',views.ProductFilterView.as_view(),name="product_filter")
+    path('product_filter/',views.ProductFilterView.as_view(),name="product_filter"),
+    path('most-ordered-products/', views.MostOrderedProductsView.as_view(), name='most-ordered-products'),
+      path("contact/", views.ContactView.as_view(), name="contact"),
 ]

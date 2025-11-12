@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from UrbenFoot.models import CategoryModel, ProductModel, CartModel, WishListModel
+from UrbenFoot.models import CategoryModel, ProductModel, CartModel, WishListModel,ContactModel
 from payments.models import OrderItemModel, OrderModel
 
 
@@ -130,3 +130,9 @@ class OrderSerializer(serializers.ModelSerializer):
             "items",
         ]
         read_only_fields = ["user", "status", "created_at", "updated_at"]
+
+
+class ContactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactModel
+        fields = "__all__"
