@@ -5,6 +5,10 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from corsheaders.defaults import default_headers
+from dotenv import load_dotenv   
+
+# Load .env file
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -13,10 +17,10 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # SECURITY
-SECRET_KEY = "django-insecure-2qcy+ha!-=pe*1k$v2-(_*si#2s9^3q&l*z11=_-)sw949813q"
-DEBUG = True
-ALLOWED_HOSTS = ["*"]
+SECRET_KEY = os.getenv("SECRET_KEY")
+DEBUG = os.getenv("DEBUG", "True") == "True"
 
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 INSTALLED_APPS = [
@@ -27,6 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     # Third-party
     "rest_framework",
     "corsheaders",
@@ -37,6 +42,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
     "dj_rest_auth.registration",
+
     # Your apps
     "accounts",
     "UrbenFoot",
@@ -45,8 +51,7 @@ INSTALLED_APPS = [
 ]
 
 SITE_ID = 1
-
-REST_USE_JWT = True  # (optional but recommended)
+REST_USE_JWT = True
 
 MIDDLEWARE = [
     "EcommerceShoe.middleware.error_middleware.ExceptionMiddleware",
@@ -84,24 +89,24 @@ SOCIALACCOUNT_PROVIDERS = {
         "AUTH_PARAMS": {"access_type": "online"},
     }
 }
+
 WSGI_APPLICATION = "EcommerceShoe.wsgi.application"
 
-# Database (PostgreSQL)
+# ---------- DATABASE (Now using .env) ----------
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "EcommerceShoe_db",
-        "USER": "ecommerce_user",
-        "PASSWORD": "akshay@123",
-        "HOST": "localhost",
-        "PORT": "5432",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
 
 AUTH_USER_MODEL = "accounts.CustomeUser"
 
-#Password Validation
-# ------------------------------------------------------------------
+# ---------- PASSWORD VALIDATION ----------
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -118,35 +123,31 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 PASSWORD_HASHERS = [
-    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",  # Bcrypt
-    "django.contrib.auth.hashers.PBKDF2PasswordHasher",        # fallback for old passwords
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
     "django.contrib.auth.hashers.Argon2PasswordHasher",
     "django.contrib.auth.hashers.ScryptPasswordHasher",
 ]
 
-# Internationalization
-# ------------------------------------------------------------------
+# ---------- I18N ----------
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
 
-#  Static / Media Files
-# ------------------------------------------------------------------
-STATIC_URL = "static/"
+# ---------- STATIC / MEDIA ----------
+STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
-# Django REST Framework & JWT
-# ------------------------------------------------------------------
+# ---------- REST FRAMEWORK & JWT ----------
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
-    "EXCEPTION_HANDLER": "EcommerceShoe.utils.exception_handler.custom_exception_handler",   #global exception handling
-    
+    "EXCEPTION_HANDLER": "EcommerceShoe.utils.exception_handler.custom_exception_handler",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 10,  # 👈 number of products per page
+    "PAGE_SIZE": 10,
 }
 
 SIMPLE_JWT = {
@@ -156,13 +157,13 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
 }
 
-# CORS & CSRF Configuration
-# ------------------------------------------------------------------
+# ---------- CORS / CSRF ----------
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
-CORS_ALLOW_CREDENTIALS = True  # Required for cookies / CSRF
+CORS_ALLOW_CREDENTIALS = True
+
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
@@ -173,28 +174,24 @@ SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_HTTPONLY = False
 CSRF_USE_SESSIONS = False
 
-# 💳 Razorpay Keys
-# ------------------------------------------------------------------
-RAZORPAY_KEY_ID = "rzp_test_RaMmhC07hlpi5T"
-RAZORPAY_KEY_SECRET = "La8ACKV8veT5UCFeEZ4jSSVT"
+# ---------- RAZORPAY ----------
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
 
-
-# Default primary key
-# ------------------------------------------------------------------
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-
-#  Gmail SMTP setup
+# ---------- EMAIL / SMTP ----------
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "akshayshaji688@gmail.com"
-EMAIL_HOST_PASSWORD = "ckvw izea qlsg qpla"           # Use Gmail App Password here
-DEFAULT_FROM_EMAIL = "UrbenFoot <akshayshaji688@gmail.com>"
 
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = f"UrbenFoot <{EMAIL_HOST_USER}>"
 
+# ---------- CORS HEADERS ----------
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "authorization",
     "x-csrftoken",
 ]
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
