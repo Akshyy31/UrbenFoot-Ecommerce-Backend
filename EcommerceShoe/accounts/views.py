@@ -152,29 +152,29 @@ class ResetPasswordView(APIView):
 # from django.contrib.auth.models import User
 # from rest_framework_simplejwt.tokens import RefreshToken
 
-class GoogleAuthView(APIView):
-    def post(self, request):
-        token = request.data.get('token')
-        try:
-            idinfo = id_token.verify_oauth2_token(
-                token,
-                requests.Request(),
-                "YOUR_GOOGLE_CLIENT_ID"
-            )
-            email = idinfo.get('email')
-            name = idinfo.get('name')
+# class GoogleAuthView(APIView):
+#     def post(self, request):
+#         token = request.data.get('token')
+#         try:
+#             idinfo = id_token.verify_oauth2_token(
+#                 token,
+#                 requests.Request(),
+#                 "YOUR_GOOGLE_CLIENT_ID"
+#             )
+#             email = idinfo.get('email')
+#             name = idinfo.get('name')
 
-            user, created = CustomeUser.objects.get_or_create(email=email, username=email)
-            if created:
-                user.first_name = name
-                user.save()
+#             user, created = CustomeUser.objects.get_or_create(email=email, username=email)
+#             if created:
+#                 user.first_name = name
+#                 user.save()
 
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-                "email": email,
-                "name": name
-            })
-        except Exception as e:
-            return Response({"error": str(e)}, status=400)
+#             refresh = RefreshToken.for_user(user)
+#             return Response({
+#                 "refresh": str(refresh),
+#                 "access": str(refresh.access_token),
+#                 "email": email,
+#                 "name": name
+#             })
+#         except Exception as e:
+#             return Response({"error": str(e)}, status=400)
