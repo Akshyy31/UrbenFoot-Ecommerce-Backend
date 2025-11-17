@@ -162,6 +162,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://51.20.60.107",
     "https://urbenfoot.duckdns.org",
+     "https://urben-foot-ecommerce-git-2e1bd5-akshay-shajis-projects-72602c30.vercel.app",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -171,6 +172,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://51.20.60.107",
      "https://urbenfoot.duckdns.org",
+      "https://urben-foot-ecommerce-git-2e1bd5-akshay-shajis-projects-72602c30.vercel.app",
 ]
 
 CSRF_COOKIE_SECURE = False
