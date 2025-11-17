@@ -8,31 +8,28 @@ import os
 from corsheaders.defaults import default_headers
 from dotenv import load_dotenv
 
-# Load .env file
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# MEDIA (for product images, etc.)
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
 # SECURITY
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "True") == "True"
+ALLOWED_HOSTS = ["*",]
 
-ALLOWED_HOSTS = ["*"]
+# MEDIA
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
-# Application definition
+# INSTALLED APPS
 INSTALLED_APPS = [
-    # Default Django apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # Third-party
+
     "rest_framework",
     "corsheaders",
     "rest_framework.authtoken",
@@ -42,7 +39,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
     "dj_rest_auth.registration",
-    # Your apps
+
     "accounts",
     "UrbenFoot",
     "payments",
@@ -52,8 +49,10 @@ INSTALLED_APPS = [
 SITE_ID = 1
 REST_USE_JWT = True
 
+
+# MIDDLEWARE  **VERY IMPORTANT ORDER**
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",  
+    "corsheaders.middleware.CorsMiddleware",   # MUST BE FIRST
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -62,7 +61,8 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # Your custom middleware LAST
+
+    # CUSTOM MIDDLEWARE LAST
     "EcommerceShoe.middleware.error_middleware.ExceptionMiddleware",
 ]
 
@@ -83,16 +83,9 @@ TEMPLATES = [
     },
 ]
 
-SOCIALACCOUNT_PROVIDERS = {
-    "google": {
-        "SCOPE": ["profile", "email"],
-        "AUTH_PARAMS": {"access_type": "online"},
-    }
-}
-
 WSGI_APPLICATION = "EcommerceShoe.wsgi.application"
 
-# ---------- DATABASE (Now using .env) ----------
+# DATABASE
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -106,20 +99,12 @@ DATABASES = {
 
 AUTH_USER_MODEL = "accounts.CustomeUser"
 
-# ---------- PASSWORD VALIDATION ----------
+# PASSWORD VALIDATION
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 PASSWORD_HASHERS = [
@@ -130,24 +115,22 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.ScryptPasswordHasher",
 ]
 
-# ---------- I18N ----------
+# INTERNATIONALIZATION
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
 
-# ---------- STATIC / MEDIA ----------
+# STATIC FILES
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
-# ---------- REST FRAMEWORK & JWT ----------
+# REST & JWT
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "EXCEPTION_HANDLER": "EcommerceShoe.utils.exception_handler.custom_exception_handler",
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 10,
 }
 
 SIMPLE_JWT = {
@@ -157,28 +140,32 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
 }
 
-# ---------- CORS / CSRF ----------
+
+# ⭐ ⭐ ⭐ CORS / CSRF FIXED ⭐ ⭐ ⭐
+
 CORS_ALLOWED_ORIGINS = [
-    "http://51.20.60.107",
-    "http://localhost:5173",
     "https://urbenfoot.duckdns.org",
-    "https://urben-foot-ecommerce-git-2e1bd5-akshay-shajis-projects-72602c30.vercel.app",
+    "https://urben-foot-ecommerce-frontend.vercel.app",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
+    "https://urbenfoot.duckdns.org",
+    "https://urben-foot-ecommerce-frontend.vercel.app",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "http://51.20.60.107",
-    "https://urbenfoot.duckdns.org",
-    "https://urben-foot-ecommerce-git-2e1bd5-akshay-shajis-projects-72602c30.vercel.app",
 ]
 
-CSRF_COOKIE_SECURE = False
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_HTTPONLY = False
-CSRF_USE_SESSIONS = False
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "authorization",
+    "content-type",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
 CORS_ALLOW_METHODS = [
     "GET",
     "POST",
@@ -188,36 +175,23 @@ CORS_ALLOW_METHODS = [
     "OPTIONS",
 ]
 
-# ---------- RAZORPAY ----------
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = False
+CSRF_USE_SESSIONS = False
+
+
+# RAZORPAY
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
 
-# ---------- EMAIL / SMTP ----------
+# EMAIL
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = f"UrbenFoot <{EMAIL_HOST_USER}>"
 
-# ---------- CORS HEADERS ----------
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    "authorization",
-    "content-type",
-    "x-csrftoken",
-    "x-requested-with",
-]
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-ACCOUNT_SIGNUP_FIELDS = [
-    "username*",
-    "email*",
-    "password1*",
-    "password2*",
-]
-
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
