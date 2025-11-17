@@ -53,16 +53,17 @@ SITE_ID = 1
 REST_USE_JWT = True
 
 MIDDLEWARE = [
-    "EcommerceShoe.middleware.error_middleware.ExceptionMiddleware",
-    "django.middleware.common.CommonMiddleware",
+    "corsheaders.middleware.CorsMiddleware",  # MUST BE FIRST
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Your custom middleware LAST
+    "EcommerceShoe.middleware.error_middleware.ExceptionMiddleware",
 ]
 
 ROOT_URLCONF = "EcommerceShoe.urls"
@@ -162,7 +163,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://51.20.60.107",
     "https://urbenfoot.duckdns.org",
-     "https://urben-foot-ecommerce-git-2e1bd5-akshay-shajis-projects-72602c30.vercel.app",
+    "https://urben-foot-ecommerce-git-2e1bd5-akshay-shajis-projects-72602c30.vercel.app",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -171,14 +172,22 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://51.20.60.107",
-     "https://urbenfoot.duckdns.org",
-      "https://urben-foot-ecommerce-git-2e1bd5-akshay-shajis-projects-72602c30.vercel.app",
+    "https://urbenfoot.duckdns.org",
+    "https://urben-foot-ecommerce-git-2e1bd5-akshay-shajis-projects-72602c30.vercel.app",
 ]
 
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_HTTPONLY = False
 CSRF_USE_SESSIONS = False
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+]
 
 # ---------- RAZORPAY ----------
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
@@ -197,7 +206,9 @@ DEFAULT_FROM_EMAIL = f"UrbenFoot <{EMAIL_HOST_USER}>"
 # ---------- CORS HEADERS ----------
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "authorization",
+    "content-type",
     "x-csrftoken",
+    "x-requested-with",
 ]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
