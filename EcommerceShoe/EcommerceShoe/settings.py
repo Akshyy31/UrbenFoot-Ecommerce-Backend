@@ -53,7 +53,7 @@ SITE_ID = 1
 REST_USE_JWT = True
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",  # MUST BE FIRST
+    "corsheaders.middleware.CorsMiddleware",  
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -159,9 +159,8 @@ SIMPLE_JWT = {
 
 # ---------- CORS / CSRF ----------
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
     "http://51.20.60.107",
+    "http://localhost:5173",
     "https://urbenfoot.duckdns.org",
     "https://urben-foot-ecommerce-git-2e1bd5-akshay-shajis-projects-72602c30.vercel.app",
 ]
