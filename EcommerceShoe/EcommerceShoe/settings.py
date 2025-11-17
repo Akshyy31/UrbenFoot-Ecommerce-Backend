@@ -1,11 +1,12 @@
 """
 Django settings for EcommerceShoe project.
 """
+
 from pathlib import Path
 from datetime import timedelta
 import os
 from corsheaders.defaults import default_headers
-from dotenv import load_dotenv   
+from dotenv import load_dotenv
 
 # Load .env file
 load_dotenv()
@@ -31,7 +32,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     # Third-party
     "rest_framework",
     "corsheaders",
@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
     "dj_rest_auth.registration",
-
     # Your apps
     "accounts",
     "UrbenFoot",
@@ -162,6 +161,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
+
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
@@ -195,3 +195,13 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 ]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+ACCOUNT_SIGNUP_FIELDS = [
+    "username*",
+    "email*",
+    "password1*",
+    "password2*",
+]
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
