@@ -1,53 +1,90 @@
-name: Deploy Backend to EC2
+name: Deploy Backend to EC2   # The name of your deployment workflow
 
 on:
   push:
     branches:
-      - main
+      - main   # This workflow runs automatically when you push code to main branch
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest   # GitHub will run this job on a Linux VM
 
     steps:
+      # -------------------------------
+      # 1. DOWNLOAD YOUR GITHUB CODE
+      # -------------------------------
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3   # This action clones your repository code into the workflow machine
 
+      # -------------------------------
+      # 2. SETUP SSH KEY FOR LOGIN EC2
+      # -------------------------------
       - name: Set up SSH private key
         run: |
-          mkdir -p ~/.ssh
+          mkdir -p ~/.ssh   # Create the .ssh folder if not exists
+
+          # Store your EC2 private key (from GitHub Secrets) inside id_rsa file
+          # This key is used to SSH into your EC2 instance
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
 
+          chmod 600 ~/.ssh/id_rsa  
+          # This gives secure permission so SSH accepts the key
+          # Without proper permission SSH will reject the private key
+
+      # ----------------------------------------------------------
+      # 3. ADD EC2 INSTANCE TO "KNOWN HOSTS" TO AVOID PROMPTS
+      # ----------------------------------------------------------
       - name: Add EC2 to known hosts
-        run: ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+        run: ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts  
+        # This fetches EC2's SSH fingerprint
+        # And stores it in known_hosts so SSH will not ask "yes/no" confirmation
 
+      # ----------------------------------------
+      # 4. SSH INTO EC2 AND DEPLOY THE PROJECT
+      # ----------------------------------------
       - name: Deploy to EC2
         run: |
+          # Connect to EC2 using SSH. -o StrictHostKeyChecking=no disables confirmation prompts.
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
 
+          # -----------------------------------
+          # MOVE TO BACKEND PROJECT DIRECTORY
+          # -----------------------------------
           cd /home/ubuntu/urbenfoot-backend/UrbenFoot-Ecommerce-Backend/EcommerceShoe
+          # cd = Change Directory
+          # You go inside your Django project folder where manage.py exists
 
           echo "Pulling latest changes..."
           git pull origin main
+          # Pulls the latest code from your GitHub repo into EC2 server
 
           echo "Activating virtual environment..."
           source /home/ubuntu/urbenfoot-backend/env/bin/activate
+          # Activates the Python virtual environment where all your dependencies are installed
 
           echo "Installing dependencies..."
           pip install -r requirements.txt
+          # Installs Python packages listed in requirements.txt
+          # Updates any new or changed packages automatically
 
           echo "Applying migrations..."
           python manage.py migrate --noinput
+          # Updates your database schema
+          # Applies new migrations created from Django models
 
           echo "Collecting static files..."
           python manage.py collectstatic --noinput
+          # Collects all static files (CSS, JS, images)
+          # Places them inside STATIC_ROOT directory for Nginx to serve
 
           echo "Restarting Gunicorn..."
           sudo systemctl restart gunicorn
+          # Restarts the Gunicorn service (your Django app server)
+          # This makes your new code live without rebooting the server
 
           echo "Restarting Nginx..."
           sudo systemctl restart nginx
+          # Restarts Nginx (your web server) to load updated configurations if any
 
           echo "Deployment completed successfully!"
           EOF
