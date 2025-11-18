@@ -1,0 +1,51 @@
+name: Deploy Backend to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up SSH private key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Add EC2 to known hosts
+        run: ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to EC2
+        run: |
+          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
+
+            cd urbenfoot-backend/UrbenFoot-Ecommerce-Backend/EcommerceShoe &&
+            
+            echo 'Pulling latest code...' &&
+            git pull origin main &&
+            
+            echo 'Activating virtual environment...' &&
+            source ../../env/bin/activate &&
+            
+            echo 'Installing requirements...' &&
+            pip install -r requirements.txt &&
+            
+            echo 'Applying migrations...' &&
+            python manage.py migrate &&
+            
+            echo 'Collecting static files...' &&
+            python manage.py collectstatic --noinput &&
+            
+            echo 'Restarting Gunicorn...' &&
+            sudo systemctl restart gunicorn &&
+            
+            echo 'Restarting Nginx...' &&
+            sudo systemctl restart nginx
+          "
