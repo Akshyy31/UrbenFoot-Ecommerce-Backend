@@ -52,17 +52,19 @@ REST_USE_JWT = True
 
 # MIDDLEWARE  **VERY IMPORTANT ORDER**
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",   # MUST BE FIRST
+    "corsheaders.middleware.CorsMiddleware",    # MUST BE FIRST
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+
     "django.middleware.csrf.CsrfViewMiddleware",
+
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 
-    # CUSTOM MIDDLEWARE LAST
+    # Custom middleware LAST
     "EcommerceShoe.middleware.error_middleware.ExceptionMiddleware",
 ]
 
@@ -145,7 +147,9 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = [
     "https://urbenfoot.duckdns.org",
+    "urbenfoot.duckdns.org",
     "https://urben-foot-ecommerce-frontend.vercel.app",
+    
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
@@ -158,6 +162,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
+
+from corsheaders.defaults import default_headers
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "authorization",

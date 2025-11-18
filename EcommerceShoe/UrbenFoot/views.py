@@ -7,19 +7,19 @@ from .serializers import (
     CartSerializer,
     WishlistSerializer,
     OrderSerializer,
-    ContactSerializer
+    ContactSerializer,
 )
-from rest_framework.permissions import IsAuthenticated,AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status
 from payments.models import OrderItemModel, OrderModel
 from accounts.permissions import IsUserOnly
 from django.db.models import Sum
+
 # Create your views here.
 
 
 class ProductListView(APIView):
-    permission_classes = [IsUserOnly]
-
+    # permission_classes = [IsUserOnly]
     def get(self, request):
         category_name = request.query_params.get("category")
         if category_name:
@@ -34,6 +34,7 @@ class ProductListView(APIView):
 
 class ProductDetailView(APIView):
     permission_classes = [IsUserOnly]
+
     def get(self, request, pk):
         try:
             product = ProductModel.objects.get(id=pk)
@@ -45,6 +46,7 @@ class ProductDetailView(APIView):
 
 class ProductFilterView(APIView):
     permission_classes = [IsUserOnly]
+
     def get(self, request):
         category = request.GET.get("category")
         name = request.GET.get("name")
@@ -195,32 +197,40 @@ class UserOrderDetailView(APIView):
         serializer = OrderSerializer(order, context={"request": request})
         return Response(serializer.data)
 
+
 class MostOrderedProductsView(APIView):
     permission_classes = [AllowAny]
+
     def get(self, request):
         # Aggregate total quantities per product
         top_products = (
-            OrderItemModel.objects
-            .values('product')
-            .annotate(total_quantity=Sum('quantity'))
-            .order_by('-total_quantity')[:5]
+            OrderItemModel.objects.values("product")
+            .annotate(total_quantity=Sum("quantity"))
+            .order_by("-total_quantity")[:5]
         )
         # Get the actual product objects in the same order
-        product_ids = [item['product'] for item in top_products]
+        product_ids = [item["product"] for item in top_products]
         products = list(ProductModel.objects.filter(id__in=product_ids))
         # Preserve order
         products.sort(key=lambda p: product_ids.index(p.id))
-        serializer = ProductSerializer(products, many=True, context={'request': request})
+        serializer = ProductSerializer(
+            products, many=True, context={"request": request}
+        )
         # Add total quantity info
         for product_data, top_data in zip(serializer.data, top_products):
-            product_data['total_ordered'] = top_data['total_quantity']
+            product_data["total_ordered"] = top_data["total_quantity"]
         return Response(serializer.data)
-    
+
+
 class ContactView(APIView):
-    permission_classes=[AllowAny]
+    permission_classes = [AllowAny]
+
     def post(self, request):
         serializer = ContactSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Your message has been sent successfully!"}, status=status.HTTP_201_CREATED)
+            return Response(
+                {"message": "Your message has been sent successfully!"},
+                status=status.HTTP_201_CREATED,
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
