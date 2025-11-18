@@ -197,3 +197,6 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = f"UrbenFoot <{EMAIL_HOST_USER}>"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# testing auto deploy
