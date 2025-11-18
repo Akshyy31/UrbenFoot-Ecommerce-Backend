@@ -143,25 +143,24 @@ SIMPLE_JWT = {
 }
 
 
-# ⭐ ⭐ ⭐ CORS / CSRF FIXED ⭐ ⭐ ⭐
+
 
 CORS_ALLOWED_ORIGINS = [
-    "https://urbenfoot.duckdns.org",
-    "urbenfoot.duckdns.org",
     "https://urben-foot-ecommerce-frontend.vercel.app",
-    
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
+
 
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://urbenfoot.duckdns.org",
     "https://urben-foot-ecommerce-frontend.vercel.app",
+    "https://urbenfoot.duckdns.org",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
+
 
 from corsheaders.defaults import default_headers
 
