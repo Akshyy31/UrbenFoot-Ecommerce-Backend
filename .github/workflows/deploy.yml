@@ -25,14 +25,14 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
-            
-            cd urbenfoot-backend/UrbenFoot-Ecommerce-Backend &&
+
+            cd urbenfoot-backend/UrbenFoot-Ecommerce-Backend/EcommerceShoe &&
             
             echo 'Pulling latest code...' &&
             git pull origin main &&
             
             echo 'Activating virtual environment...' &&
-            source env/bin/activate &&
+            source ../../env/bin/activate &&
             
             echo 'Installing requirements...' &&
             pip install -r requirements.txt &&
